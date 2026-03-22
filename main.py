@@ -51,6 +51,7 @@ def base_opts() -> dict:
     opts = {
         "quiet": True,
         "no_warnings": True,
+        "no_check_certificate": True,
         "extractor_args": {"youtubetab": {"skip": ["authcheck"]}},
     }
     cookies_file = get_cookies_file()
@@ -116,12 +117,22 @@ async def download(req: DownloadRequest):
         media_type = "audio/mpeg"
     else:
         q = req.quality
-        fmt = "bestvideo+bestaudio/best" if q == "best" else f"bestvideo[height<={q}]+bestaudio/best[height<={q}]/best"
+        if q == "best":
+            fmt = "bestvideo+bestaudio/best/bestvideo/best"
+        else:
+            fmt = (
+                f"bestvideo[height<={q}]+bestaudio"
+                f"/bestvideo[height<={q}]"
+                f"/best[height<={q}]"
+                f"/bestvideo+bestaudio"
+                f"/best"
+            )
         ydl_opts = {
             **base_opts(),
             "format": fmt,
             "outtmpl": str(out_path) + ".%(ext)s",
             "merge_output_format": "mp4",
+            "format_sort": ["res", "ext:mp4:m4a", "tbr", "br"],
         }
         ext = "mp4"
         media_type = "video/mp4"
