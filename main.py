@@ -47,8 +47,12 @@ def get_cookies_file() -> str | None:
     return tmp.name
 
 def base_opts() -> dict:
-    """Base yt-dlp options, with cookies if available."""
-    opts = {"quiet": True, "no_warnings": True}
+    """Base yt-dlp options, with cookies and authcheck skip."""
+    opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "extractor_args": {"youtubetab": {"skip": ["authcheck"]}},
+    }
     cookies_file = get_cookies_file()
     if cookies_file:
         opts["cookiefile"] = cookies_file
