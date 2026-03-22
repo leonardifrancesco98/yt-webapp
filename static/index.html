@@ -32,7 +32,6 @@
     overflow-x: hidden;
   }
 
-  /* Noise texture overlay */
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -50,7 +49,6 @@
     padding: 2rem 1.5rem 6rem;
   }
 
-  /* Header */
   header {
     display: flex;
     align-items: center;
@@ -90,7 +88,6 @@
     letter-spacing: 0.1em;
   }
 
-  /* Input section */
   .input-group {
     display: flex;
     gap: 0;
@@ -136,7 +133,6 @@
     margin-bottom: 2rem;
   }
 
-  /* Status bar */
   .status-bar {
     display: none;
     align-items: center;
@@ -163,7 +159,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Result card */
   .result-card {
     display: none;
     background: var(--surface);
@@ -242,7 +237,45 @@
     flex-shrink: 0;
   }
 
-  /* Download buttons */
+  /* Quality selector */
+  .quality-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .quality-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .quality-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .quality-pill {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .quality-pill:hover { border-color: var(--red); color: var(--text); }
+  .quality-pill.active {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+  }
+
   .dl-buttons {
     display: flex;
     gap: 0.5rem;
@@ -282,10 +315,8 @@
   .dl-btn > * { position: relative; z-index: 1; }
   .dl-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .dl-btn:disabled::before { display: none; }
-
   .dl-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-  /* Download progress */
   .dl-progress {
     display: none;
     padding: 1rem 1.25rem;
@@ -298,10 +329,7 @@
     color: var(--muted);
     margin-bottom: 0.4rem;
   }
-  .progress-bar-bg {
-    height: 3px;
-    background: var(--border);
-  }
+  .progress-bar-bg { height: 3px; background: var(--border); }
   .progress-bar-fill {
     height: 100%;
     background: var(--red);
@@ -314,7 +342,6 @@
     50% { opacity: 0.6; }
   }
 
-  /* Footer */
   footer {
     margin-top: 4rem;
     padding-top: 1.5rem;
@@ -325,11 +352,7 @@
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  footer p {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--muted);
-  }
+  footer p { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); }
   .version-badge {
     font-family: var(--mono);
     font-size: 0.6rem;
@@ -340,7 +363,6 @@
     letter-spacing: 0.1em;
   }
 
-  /* Mobile */
   @media (max-width: 520px) {
     .logo-text { font-size: 1.5rem; }
     .tagline { display: none; }
@@ -362,10 +384,10 @@
 
   <div class="input-group">
     <input class="url-input" id="urlInput" type="url"
-      placeholder="https://www.youtube.com/watch?v=..."/>
+      placeholder="https://youtu.be/... or https://www.youtube.com/watch?v=..."/>
     <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">ANALYZE</button>
   </div>
-  <p class="hint">// Paste any YouTube URL — video, short, or playlist item</p>
+  <p class="hint">// Supports youtube.com/watch, youtu.be, Shorts and Playlist items</p>
 
   <div class="status-bar" id="statusBar">
     <div class="spinner" id="spinner"></div>
@@ -381,6 +403,13 @@
       <div class="card-info">
         <div class="video-title" id="videoTitle"></div>
         <div class="meta-row" id="metaRow"></div>
+
+        <!-- Quality pills (video only) -->
+        <div class="quality-row" id="qualityRow">
+          <span class="quality-label">Quality:</span>
+          <div class="quality-pills" id="qualityPills"></div>
+        </div>
+
         <div class="dl-buttons">
           <button class="dl-btn" id="audioBtn" onclick="dl('audio')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -390,11 +419,7 @@
           </button>
           <button class="dl-btn" id="videoBtn" onclick="dl('video')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-              <line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
-              <line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/>
-              <line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/>
-              <line x1="17" y1="7" x2="22" y2="7"/>
+              <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
             </svg>
             <span>MP4 Video</span>
           </button>
@@ -409,13 +434,14 @@
 
   <footer>
     <p>© 2026 YTDL — Personal use only. Respect copyright laws.</p>
-    <span class="version-badge">v1.0.0</span>
+    <span class="version-badge">v2.0.0</span>
   </footer>
 
 </div>
 
 <script>
-const API = '';  // same origin
+const API = '';
+let selectedQuality = 'best';
 
 function fmtDuration(s) {
   if (!s) return '';
@@ -425,7 +451,6 @@ function fmtDuration(s) {
   if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
-
 function fmtViews(n) {
   if (!n) return '0 views';
   if (n >= 1e9) return (n/1e9).toFixed(1) + 'B views';
@@ -433,7 +458,6 @@ function fmtViews(n) {
   if (n >= 1e3) return (n/1e3).toFixed(1) + 'K views';
   return n + ' views';
 }
-
 function fmtDate(d) {
   if (!d || d.length < 8) return '';
   return `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
@@ -447,32 +471,24 @@ function setStatus(msg, type='') {
   txt.textContent = msg;
   sp.style.display = type ? 'none' : 'block';
   if (type === 'error' || type === 'success') {
-    setTimeout(() => { bar.className = 'status-bar'; }, 4000);
+    setTimeout(() => { bar.className = 'status-bar'; }, 5000);
   }
 }
-
-function hideStatus() {
-  document.getElementById('statusBar').className = 'status-bar';
-}
+function hideStatus() { document.getElementById('statusBar').className = 'status-bar'; }
 
 async function analyze() {
   const url = document.getElementById('urlInput').value.trim();
   if (!url) return;
-
   document.getElementById('analyzeBtn').disabled = true;
   document.getElementById('resultCard').className = 'result-card';
   setStatus('Fetching video info…');
-
   try {
     const res = await fetch(API + '/analyze', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ url })
     });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Unknown error');
-    }
+    if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Unknown error'); }
     const data = await res.json();
     hideStatus();
     renderCard(data);
@@ -493,13 +509,27 @@ function renderCard(data) {
     { label: fmtViews(data.views) },
     { label: fmtDate(data.upload_date) },
   ].filter(m => m.label);
-
   document.getElementById('metaRow').innerHTML = meta
     .map(m => `<span class="meta-item"><span class="dot"></span>${m.label}</span>`)
     .join('');
 
+  // Render quality pills
+  const pills = document.getElementById('qualityPills');
+  const qualities = data.qualities || [{ label: 'Best available', value: 'best' }];
+  selectedQuality = qualities[0].value;
+  pills.innerHTML = qualities.map(q =>
+    `<button class="quality-pill ${q.value === selectedQuality ? 'active' : ''}"
+      onclick="selectQuality('${q.value}', this)">${q.label}</button>`
+  ).join('');
+
   document.getElementById('dlProgress').className = 'dl-progress';
   document.getElementById('resultCard').className = 'result-card visible';
+}
+
+function selectQuality(value, el) {
+  selectedQuality = value;
+  document.querySelectorAll('.quality-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
 }
 
 async function dl(fmt) {
@@ -515,28 +545,23 @@ async function dl(fmt) {
   audioBtn.disabled = true;
   videoBtn.disabled = true;
   dlProgress.className = 'dl-progress visible';
-  dlLabel.textContent = fmt === 'audio' ? 'Extracting audio…' : 'Downloading video…';
+  dlLabel.textContent = fmt === 'audio' ? 'Extracting audio…' : `Downloading ${selectedQuality === 'best' ? 'best quality' : selectedQuality + 'p'} video…`;
   fill.style.width = '15%';
 
-  // Fake progress while waiting
   let pct = 15;
   const ticker = setInterval(() => {
     pct = Math.min(pct + Math.random() * 8, 85);
     fill.style.width = pct + '%';
-  }, 600);
+  }, 700);
 
   try {
     const res = await fetch(API + '/download', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ url, format: fmt })
+      body: JSON.stringify({ url, format: fmt, quality: selectedQuality })
     });
     clearInterval(ticker);
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Download failed');
-    }
+    if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Download failed'); }
 
     fill.style.width = '100%';
     dlLabel.textContent = 'Done! Starting download…';
@@ -552,16 +577,12 @@ async function dl(fmt) {
     a.click();
     URL.revokeObjectURL(a.href);
 
-    setTimeout(() => {
-      dlProgress.className = 'dl-progress';
-      fill.style.width = '0%';
-    }, 3000);
-
+    setTimeout(() => { dlProgress.className = 'dl-progress'; fill.style.width = '0%'; }, 3000);
   } catch(e) {
     clearInterval(ticker);
     dlLabel.textContent = 'Error: ' + e.message;
     fill.style.width = '0%';
-    setTimeout(() => { dlProgress.className = 'dl-progress'; }, 4000);
+    setTimeout(() => { dlProgress.className = 'dl-progress'; }, 5000);
   } finally {
     audioBtn.disabled = false;
     videoBtn.disabled = false;
