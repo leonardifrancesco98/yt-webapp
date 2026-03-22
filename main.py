@@ -37,19 +37,29 @@ def normalize_url(url: str) -> str:
     return url.strip()
 
 def get_cookies_file() -> str | None:
-    """Write YOUTUBE_COOKIES env var to a temp file and return its path."""
+    """Write YOUTUBE_COOKIES env var to a temp file in Netscape format."""
     cookies = os.environ.get("YOUTUBE_COOKIES", "").strip()
-    print(f"[COOKIES] env var present: {bool(cookies)}, length: {len(cookies)}", flush=True)
     if not cookies:
         print("[COOKIES] WARNING: No YOUTUBE_COOKIES env var found!", flush=True)
         return None
+
+    # Ensure proper Netscape header is present
+    HEADER = "# Netscape HTTP Cookie File"
+    lines = cookies.splitlines()
+    # Strip any blank lines or BOM at the start
+    while lines and not lines[0].strip():
+        lines.pop(0)
+
+    if not lines[0].startswith("# Netscape"):
+        print("[COOKIES] Header missing — prepending Netscape header", flush=True)
+        lines.insert(0, HEADER)
+
+    final = "\n".join(lines) + "\n"
+    print(f"[COOKIES] Writing {len(lines)} lines, first: {lines[0][:60]}", flush=True)
+
     tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
-    tmp.write(cookies)
+    tmp.write(final)
     tmp.close()
-    print(f"[COOKIES] Written to temp file: {tmp.name}", flush=True)
-    # Verify first line looks like a cookies.txt header
-    first_line = cookies.split("\n")[0]
-    print(f"[COOKIES] First line: {first_line[:80]}", flush=True)
     return tmp.name
 
 def base_opts() -> dict:
