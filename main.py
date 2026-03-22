@@ -39,11 +39,17 @@ def normalize_url(url: str) -> str:
 def get_cookies_file() -> str | None:
     """Write YOUTUBE_COOKIES env var to a temp file and return its path."""
     cookies = os.environ.get("YOUTUBE_COOKIES", "").strip()
+    print(f"[COOKIES] env var present: {bool(cookies)}, length: {len(cookies)}", flush=True)
     if not cookies:
+        print("[COOKIES] WARNING: No YOUTUBE_COOKIES env var found!", flush=True)
         return None
     tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
     tmp.write(cookies)
     tmp.close()
+    print(f"[COOKIES] Written to temp file: {tmp.name}", flush=True)
+    # Verify first line looks like a cookies.txt header
+    first_line = cookies.split("\n")[0]
+    print(f"[COOKIES] First line: {first_line[:80]}", flush=True)
     return tmp.name
 
 def base_opts() -> dict:
